@@ -1,0 +1,70 @@
+@startuml initial
+!include ./commons.puml.style
+
+package macpacking {
+
+    abstract class DatasetReader {
+        + offline(): WeightSet
+        + online(): WeightStream
+        --
+        # {abstract} _load_data_from_disk(): WeightSet
+    }
+
+    class BinppReader extends DatasetReader {
+        + this(filename: String)
+        --
+        # _load_data_from_disk(): WeightSet
+    }
+
+    interface BinPacker {}
+
+    abstract class Online implements BinPacker {
+        + __call__(ws: WeightStream)
+        --
+        # _process(capacity: Int, stream: Iterator[Int])
+    }
+
+    abstract class Offline implements BinPacker {
+        + __call__(ws: WeightSet)
+        --
+        # _process(capacity: Int, weights: List[Int])
+    }
+
+    package algorithms {
+
+        class BenMaier extends Offline {
+            # _process(c: Int, weights: List[Int])
+        }
+
+        class NextFit_Off extends Offline {
+            # _process(c: Int, weights: List[Int])
+        }
+
+        class NextFit_On extends Online {
+            # _process(c: Int, stream: Iterator[Int])
+        }
+
+        NextFit_On <. NextFit_Off 
+    }
+
+
+}
+
+
+class Notebook <<Jupyter>> {
+
+}
+
+Notebook ..> DatasetReader
+Notebook ..> BinPacker
+
+class SampleBench <<Benchmark>> {
+    + main()
+    
+}
+
+
+NextFit_On <.. SampleBench
+BinppReader <.. SampleBench
+
+@enduml
