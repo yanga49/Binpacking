@@ -3,6 +3,7 @@ from os import listdir
 from os.path import isfile, join, basename
 from macpacking.algorithms.online import NextFit
 from macpacking.reader import BinppReader
+from macpacking.reader import JburkardtReader
 
 
 # We consider:
