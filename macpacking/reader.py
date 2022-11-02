@@ -59,12 +59,13 @@ class JburkardtReader(DatasetReader):
 
     def _load_data_from_disk(self) -> WeightSet:
         with open(self.__cfilename, 'r') as reader:
-            capacity: int = int(reader.readline())
-        
+            capacity: int = int(reader.readline()[:-1])
+
         with open(self.__pfilename, 'r') as reader2:
-            lines = reader2.readlines()[:-1]
+            lines = reader2.readlines()
             weights = []
             for line in lines:
-                weights.append(int(line.strip()))
+                if line != "\n":
+                    weights.append(int(line.strip()))
             
         return (capacity, weights)

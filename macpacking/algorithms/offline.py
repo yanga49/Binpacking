@@ -43,3 +43,19 @@ class WorstFitDecreasing(Offline):
         weights = sorted(weights, reverse=True)
         delegation = Wf_online()
         return delegation((capacity, weights))
+
+class GreedyHeuristic(Offline):
+
+    def __init__(self, num_bins) -> None:
+        super().__init__()
+        self.num_bins = num_bins
+
+    def _process(self, capacity: int, weights: list[int]) -> Solution:
+        sums = [0] * self.num_bins
+        partition = [[] for _ in range(self.num_bins)]
+        for number in weights:
+            smallest = min(range(len(sums)), key=sums.__getitem__)
+            sums[smallest] += number
+            partition[smallest].append(number)
+        return partition
+    
