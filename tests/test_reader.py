@@ -15,10 +15,10 @@ def test_binpp_reader():
 
 def test_jburkardt_reader():
     datasetc = '_datasets/jburkardt/p01_c.txt'
-    datasetw = '_datasets/jburkardt/p02_w.txt'
+    datasetw = '_datasets/jburkardt/p01_w.txt'
     capacity = 100
     oracle = [
-        6, 7, 18, 19, 32, 37, 43, 46, 50, 64, 79, 94, 99
+        3, 7, 11, 33, 33, 33, 50, 60, 70
     ]
     reader: DatasetReader = JburkardtReader(datasetw,datasetc)
     assert capacity == reader.offline()[0]
