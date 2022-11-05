@@ -3,7 +3,7 @@ from macpacking.algorithms.online import NextFit, MostTerrible, FirstFit, BestFi
 from macpacking.algorithms.offline import NextFit
 
 
-test_binpp = Margin('optimal_solutions/binpp.csv', WorstFit(), 'Worst Fit', True)
+test_binpp = Margin('optimal_solutions/jburkardt.csv', BestFit(), 'Best Fit Decreasing', False)
 test_binpp.display_discrete()
 test_binpp.display_continuous()
 print(test_binpp.optimal)

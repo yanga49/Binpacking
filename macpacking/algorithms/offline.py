@@ -44,6 +44,7 @@ class WorstFitDecreasing(Offline):
         delegation = Wf_online()
         return delegation((capacity, weights))
 
+
 class GreedyHeuristic(Offline):
 
     def __init__(self, num_bins) -> None:
