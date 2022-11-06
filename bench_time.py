@@ -40,6 +40,7 @@ Case = str
 
 
 def main():
+    '''this function calls all other benchmarking functions'''
     cases = list_case_files(CASES)
     online_binpacker = [NextFitOnline(), FirstFit(), BestFit(), WorstFit(), MostTerrible(), RefinedFirstFit()]
     offline_binpacker = [NextFitOffline(), FirstFitDecreasing(), BestFitDecreasing(), MostTerribleDecreasing(),
@@ -47,21 +48,25 @@ def main():
     vals = []
     case = [cases[0]]
     run_bench_time(offline_binpacker, case, False)
+    # plot histogram:
     # linear = ['greedy', 'most terrible', 'next fit']
     # nonlinear = ['first fit', 'best fit', 'worst fit', 'refined first fit', 'python-binpacking']
     # all_names = linear + nonlinear
     # for algo in all_names:
     #     val = load_bench_measurements(algo, case, 'outputs/pyperf_measurements_offline_case.json')
     #     vals.append(val)
-    # plot_hist(vals)
+    # plot_hist(vals, "N4C2W2_A", "all offline")
 
 
 def list_case_files(dir: str) -> list[Case]:
+    '''this function sorts and lists the case filenames'''
     return sorted([f'{dir}/{f}' for f in listdir(dir) if isfile(join(dir, f))])
 
 
 def run_bench_time(algorithms: list, cases: list[Case], is_online: bool) -> None:
+    '''this function runs pyperf on all the algorithms for all the cases'''
     runner = pyperf.Runner()
+    # run algorithm on all cases
     for algo in algorithms:
         for case in cases:
             name = run_algorithm(algo, case, is_online)['name'] + "_" + basename(case)
@@ -70,6 +75,7 @@ def run_bench_time(algorithms: list, cases: list[Case], is_online: bool) -> None
             else:
                 data = BinppReader(case).offline()
             runner.bench_func(name, algo, data)
+    # run baseline algorithm on all cases
     for case in cases:
         name = "python-binpacking_" + basename(case)
         if not is_online:
@@ -78,6 +84,7 @@ def run_bench_time(algorithms: list, cases: list[Case], is_online: bool) -> None
 
 
 def run_algorithm(algorithm, case: Case, is_online: bool) -> Result:
+    '''this function runs the algorithm on a case and returns the result'''
     reader: DatasetReader
     reader = BinppReader(case)
     if is_online:
@@ -90,20 +97,21 @@ def run_algorithm(algorithm, case: Case, is_online: bool) -> Result:
 
 
 def load_bench_measurements(algo: str, cases: list[Case], json_filename: str) -> (list, str):
-    """extract the values for a given benchmark"""
+    """this function extracts the values for a given benchmark"""
     suite = BenchmarkSuite.load(json_filename)
     values = []
     for case in cases:
         name = algo + "_" + basename(case)
         bench = suite.get_benchmark(name)
-        values += list(bench.get_values())
+        values += list(bench.get_values())  # compile all values using one algorithm to a list
     return values, algo
 
 
-def plot_hist(vals: list) -> None:
+def plot_hist(vals: list, dataset: str, classify: str) -> None:
+    '''this function plots a histogram of the execution times'''
     for val in range(len(vals)):
         plt.hist(vals[val][0], bins=10, label=vals[val][1])
-    plt.title("Execution time for non-linear offline bin packing algorithms on binpp dataset N4C2W2_A")
+    plt.title(f"Execution time for {classify} bin packing algorithms on binpp dataset {dataset}")
     plt.xlabel("Execution time (s)")
     plt.ylabel("Instances")
     plt.legend(loc="upper right")

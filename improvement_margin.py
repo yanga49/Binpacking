@@ -17,6 +17,16 @@ Discrete = dict
 Continuous = dict
 
 
+'''
+The Margin class reads the optimal solutions for a dataset from a csv file and 
+compares the number of bins used in the optimal solution to the number of bins 
+used by the algorithm. 
+The discrete margin prints whether a case was optimal or not.
+The continuous margin produces a bar graph of the difference between the optimal
+and algorithmic solution.
+'''
+
+
 class Margin:
     def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' ') -> None:
         self.filepath = optimal_filename
@@ -38,7 +48,7 @@ class Margin:
         elif self.filepath == 'optimal_solutions/jburkardt.csv':
             self.directory = 'jburkardt'
 
-    # this method defines the optimal_solutions solutions in a csv file as a dictionary
+    '''this method defines the optima solutions in a csv file as a dictionary'''
     def read_csv(self) -> None:
         # initialize empty dictionary
         self.optimal = {}
@@ -51,7 +61,7 @@ class Margin:
         for row in rows:
             self.optimal[row[0]] = int(row[1])
 
-    # this method runs the algorithm for the specified dataset and returns the solution
+    '''this method runs the algorithm for the specified dataset and returns the solution'''
     def run_algorithm(self) -> None:
         # initialize empty dictionary
         self.solutions = {}
@@ -81,7 +91,7 @@ class Margin:
             # print(f'{sorted(result)}')
             self.solutions[key] = len(result)  # store number of bins in solutions[key]
 
-    # this method returns whether the solutions are optimal_solutions or not
+    '''this method returns whether the solutions are optimal or not'''
     def discrete_margin(self) -> Discrete:
         is_optimal = {}
         if not self.case:
@@ -99,7 +109,7 @@ class Margin:
                         is_optimal[key] = True
         return is_optimal
 
-    # this method returns how many more bins the solutions use than the optimal_solutions solution does
+    '''this method returns how many more bins the solutions use than the optimal solution does'''
     def continuous_margin(self) -> Continuous:
         bin_difference = {}
         if not self.case:
@@ -111,7 +121,7 @@ class Margin:
                     bin_difference[key] = self.solutions[key] - self.optimal[key]
         return bin_difference
 
-    # this method displays the discrete margin
+    '''this method displays the discrete margin'''
     def display_discrete(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
@@ -127,7 +137,7 @@ class Margin:
                 discrete += f'\n{key} is not optimal'
         print(discrete)
 
-    # this method displays the continuous margin
+    '''this method displays the continuous margin'''
     def display_continuous(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
