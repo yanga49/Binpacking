@@ -13,6 +13,7 @@ def test_binpp_reader():
     assert capacity == reader.offline()[0]
     assert oracle == sorted(reader.offline()[1])
 
+
 def test_jburkardt_reader():
     datasetc = '_datasets/jburkardt/p01_c.txt'
     datasetw = '_datasets/jburkardt/p02_w.txt'
@@ -20,6 +21,6 @@ def test_jburkardt_reader():
     oracle = [
         6, 7, 18, 19, 32, 37, 43, 46, 50, 64, 79, 94, 99
     ]
-    reader: DatasetReader = JburkardtReader(datasetw,datasetc)
+    reader: DatasetReader = JburkardtReader(datasetw, datasetc)
     assert capacity == reader.offline()[0]
     assert oracle == sorted(reader.offline()[1])

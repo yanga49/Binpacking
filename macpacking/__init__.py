@@ -8,3 +8,6 @@ WeightStream = (int, Iterator[int])
 
 # Solution as a list of bins, each one being a list of objects
 Solution = list[list[int]]
+
+# Result as a dictionary containing 'solution', 'operations', 'comparisons'
+Result = dict
