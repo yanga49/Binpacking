@@ -17,6 +17,8 @@ else:
 # REMEMBER TO TYPE ALIAS OUTPUT
 Filename = str
 Algorithm = str
+Discrete = dict
+Continuous = dict
 
 
 class Margin:
@@ -34,11 +36,11 @@ class Margin:
             self.directory = 'binpp-hard'
         elif self.filepath == 'optimal_solutions/jburkardt.csv':
             self.directory = 'jburkardt'
-        self.read_csv()
-        self.run_algorithm()
 
     # this method defines the optimal_solutions solutions in a csv file as a dictionary
     def read_csv(self):
+        # initialize empty dictionary
+        self.optimal = {}
         csv_file = open(self.filepath, 'r')
         rows = []
         lines = csv_file.readlines()
@@ -50,6 +52,8 @@ class Margin:
 
     # this method runs the algorithm for the specified dataset and returns the solution
     def run_algorithm(self):
+        # initialize empty dictionary
+        self.solutions = {}
         reader: DatasetReader
         for key in self.optimal.keys():
             if self.directory == 'binpp':
@@ -65,15 +69,15 @@ class Margin:
 
             if self.is_online:
                 strategy: Online = self.algorithm
-                result = strategy(reader.online())
+                result = strategy(reader.online())['solution']
             else:
                 strategy: Offline = self.algorithm
-                result = strategy(reader.offline())
+                result = strategy(reader.offline())['solution']
             print(f'{sorted(result)}')
             self.solutions[key] = len(result)  # store number of bins in solutions[key]
 
     # this method returns whether the solutions are optimal_solutions or not
-    def discrete_margin(self):
+    def discrete_margin(self) -> Discrete:
         is_optimal = {}
         for key in self.optimal.keys():  # if solution has more bins, it is_optimal = F
             if self.solutions[key] > self.optimal[key]:
@@ -83,13 +87,19 @@ class Margin:
         return is_optimal
 
     # this method returns how many more bins the solutions use than the optimal_solutions solution does
-    def continuous_margin(self):
+    def continuous_margin(self) -> Continuous:
         bin_difference = {}
         for key in self.optimal.keys():
             bin_difference[key] = self.solutions[key] - self.optimal[key]
         return bin_difference
 
+    # this method displays the discrete margin
     def display_discrete(self):
+        # read csv file to find optimal solutions
+        self.read_csv()
+        # run algorithm to find solutions
+        self.run_algorithm()
+        # find discrete margin
         is_optimal = self.discrete_margin()
         discrete = ''
         for key in is_optimal.keys():
@@ -99,7 +109,13 @@ class Margin:
                 discrete += f'\n{key} is not optimal'
         print(discrete)
 
+    # this method displays the continuous margin
     def display_continuous(self):
+        # read csv file to find optimal solutions
+        self.read_csv()
+        # run algorithm to find solutions
+        self.run_algorithm()
+        # find continuous margin
         bin_difference = self.continuous_margin()
         title = self.algo_name
         x = []
@@ -107,7 +123,6 @@ class Margin:
         for key in bin_difference.keys():
             x.append(key)
             y.append(bin_difference[key])
-        plt.figure(figsize=(12,6))
         plt.bar(x, y, color='maroon', width=0.5)
         plt.xlabel(f'{self.directory} data')
         plt.ylabel(f'Difference of bins from optimal solution')

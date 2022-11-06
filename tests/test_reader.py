@@ -20,6 +20,6 @@ def test_jburkardt_reader():
     oracle = [
         3, 7, 11, 33, 33, 33, 50, 60, 70
     ]
-    reader: DatasetReader = JburkardtReader(datasetw,datasetc)
+    reader: DatasetReader = JburkardtReader(datasetw, datasetc)
     assert capacity == reader.offline()[0]
     assert oracle == sorted(reader.offline()[1])
