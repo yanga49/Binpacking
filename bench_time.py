@@ -56,11 +56,11 @@ def main():
     # plot_hist(vals)
 
 
-def list_case_files(dir: str) -> list[str]:
+def list_case_files(dir: str) -> list[Case]:
     return sorted([f'{dir}/{f}' for f in listdir(dir) if isfile(join(dir, f))])
 
 
-def run_bench_time(algorithms: list, cases: list, is_online) -> None:
+def run_bench_time(algorithms: list, cases: list[Case], is_online: bool) -> None:
     runner = pyperf.Runner()
     for algo in algorithms:
         for case in cases:
@@ -77,7 +77,7 @@ def run_bench_time(algorithms: list, cases: list, is_online) -> None:
             runner.bench_func(name, BenMaier(), data)
 
 
-def run_algorithm(algorithm, case: str, is_online) -> Result:
+def run_algorithm(algorithm, case: Case, is_online: bool) -> Result:
     reader: DatasetReader
     reader = BinppReader(case)
     if is_online:
@@ -89,7 +89,7 @@ def run_algorithm(algorithm, case: str, is_online) -> Result:
     return result
 
 
-def load_bench_measurements(algo: str, cases: list[str], json_filename: str) -> (list, str):
+def load_bench_measurements(algo: str, cases: list[Case], json_filename: str) -> (list, str):
     """extract the values for a given benchmark"""
     suite = BenchmarkSuite.load(json_filename)
     values = []
@@ -100,17 +100,9 @@ def load_bench_measurements(algo: str, cases: list[str], json_filename: str) -> 
     return values, algo
 
 
-def draw_hist(values: list[float], title: str, canvas):
-    canvas.set_title(title)
-    canvas.set(xlabel='exec time (s)', ylabel='|instances|')
-    canvas.hist(values, 10)
-
-
-def plot_hist(vals: list):
-    # fig, axes = plt.subplots(1, len(vals), sharex=True, sharey=True)
+def plot_hist(vals: list) -> None:
     for val in range(len(vals)):
         plt.hist(vals[val][0], bins=10, label=vals[val][1])
-        # draw_hist(vals[val][0], vals[val][1], axes[val])
     plt.title("Execution time for non-linear offline bin packing algorithms on binpp dataset N4C2W2_A")
     plt.xlabel("Execution time (s)")
     plt.ylabel("Instances")

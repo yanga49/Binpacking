@@ -40,15 +40,19 @@ Case = str
 
 def main():
     all_cases = []
-    kpi = 'comparisons'
+    kpi = 'operations'
     for CASE in ALL_CASES:
         all_cases.append(list_case_files(CASE))
     online_binpacker = [NextFitOnline(), FirstFit(), BestFit(), WorstFit(), MostTerrible(), RefinedFirstFit()]
     quadratic_big = [NextFitOffline(), WorstFitDecreasing(), RefinedFirstFitDecreasing()]
     quadratic_small = [FirstFitDecreasing(), BestFitDecreasing()]
-    linear = [MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
-    offline_binpacker = quadratic_big + quadratic_small + linear
-    plot_lines(offline_binpacker, all_cases, False, kpi)
+    quadratic_c = quadratic_big + quadratic_small
+    linear_c = [MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
+    quadratic_o = [BestFitDecreasing(), WorstFitDecreasing()]
+    linear_o = [FirstFitDecreasing(), NextFitOffline(), RefinedFirstFitDecreasing(),
+                MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
+    offline_binpacker = quadratic_big + quadratic_small + linear_c
+    plot_lines(quadratic_o, all_cases, False, kpi)
 
 
 def list_case_files(dir: str) -> list[Case]:
@@ -114,7 +118,7 @@ def plot_lines(algorithms: list, all_cases: list[list[Case]], is_online: bool, k
     online = "offline"
     if is_online:
         online = "online"
-    plt.title("Measurement of " + kpi + " using linear " + online + " bin packing algorithms on binpp dataset")
+    plt.title("Measurement of " + kpi + " using quadratic " + online + " bin packing algorithms on binpp dataset")
     plt.legend()
     plt.show()
 
@@ -136,6 +140,5 @@ def run_algorithm(algorithm, case: str, is_online: bool) -> Result:
     return result
 
 
-# if __name__ == "__main__":
-#     main()
-main()
+if __name__ == "__main__":
+    main()
