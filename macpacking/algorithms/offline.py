@@ -7,7 +7,7 @@ from .online import BestFit as Bf_online
 from .online import RefinedFirstFit as Rff_online
 
 
-class NextFit(Offline):
+class NextFitDecreasing(Offline):
 
     def _process(self, capacity: int, weights: WeightSet) -> Result:
         '''An offline version of NextFit, ordering the weigh stream and
@@ -45,7 +45,7 @@ class WorstFitDecreasing(Offline):
         delegation = Wf_online()
         return delegation((capacity, weights))
 
-class RefinedFirstFit(Offline):
+class RefinedFirstFitDecreasing(Offline):
 
     def _process(self, capacity: int, weights: WeightSet) -> Solution:
         '''An offline version of Refined First Fit, ordering the weigh stream and

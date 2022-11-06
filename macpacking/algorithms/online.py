@@ -94,7 +94,7 @@ class BestFit(Online):
                 operations += 2
             else:
                 bin_cap[bi] -= w
-                solution[j].append(w)
+                solution[bi].append(w)
                 operations += 1
         result['solution'] = solution
         result['operations'] = operations
@@ -123,6 +123,7 @@ class WorstFit(Online):
                     mx = bin_cap[j] - w
                     operations += 1
             comparisons += 1
+            # if no bin can accomodate weight, new bin has to be created
             if mx == -1:
                 bin_cap[bin_count] = capacity - w
                 bin_count += 1
@@ -130,7 +131,7 @@ class WorstFit(Online):
                 operations += 2
             else:
                 bin_cap[wi] -= w
-                solution[j].append(w)
+                solution[wi].append(w)
                 operations += 1
         result['solution'] = solution
         result['operations'] = operations

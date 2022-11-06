@@ -1,6 +1,6 @@
 from improvement_margin import Margin
 from macpacking.algorithms.online import NextFit, MostTerrible
-from macpacking.algorithms.offline import NextFit
+from macpacking.algorithms.offline import NextFitDecreasing
 
 
 test_binpp = Margin('optimal_solutions/jburkardt.csv', NextFit(), 'Next Fit', True, 'N1C1W1')
