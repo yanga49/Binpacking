@@ -3,10 +3,6 @@ import matplotlib.pyplot as plt
 import platform
 from macpacking.reader import DatasetReader, BinppReader, JburkardtReader
 from macpacking.model import Online, Offline
-# import macpacking.algorithms.online as online
-# import macpacking.algorithms.offline as offline
-from macpacking.algorithms.online import NextFit, MostTerrible, FirstFit, BestFit, WorstFit
-from macpacking.algorithms.offline import NextFitDecreasing, FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing
 
 
 if platform.system() == 'Darwin':
@@ -14,15 +10,25 @@ if platform.system() == 'Darwin':
 else:
     matplotlib.use('TkAgg')
 
-# REMEMBER TO TYPE ALIAS OUTPUT
+# type aliases
 Filename = str
 Algorithm = str
 Discrete = dict
 Continuous = dict
 
 
+'''
+The Margin class reads the optimal solutions for a dataset from a csv file and 
+compares the number of bins used in the optimal solution to the number of bins 
+used by the algorithm. 
+The discrete margin prints whether a case was optimal or not.
+The continuous margin produces a bar graph of the difference between the optimal
+and algorithmic solution.
+'''
+
+
 class Margin:
-    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' '):
+    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' ') -> None:
         self.filepath = optimal_filename
         self.algorithm = algorithm
         self.algo_name = algo_name
@@ -42,8 +48,8 @@ class Margin:
         elif self.filepath == 'optimal_solutions/jburkardt.csv':
             self.directory = 'jburkardt'
 
-    # this method defines the optimal_solutions solutions in a csv file as a dictionary
-    def read_csv(self):
+    '''this method defines the optima solutions in a csv file as a dictionary'''
+    def read_csv(self) -> None:
         # initialize empty dictionary
         self.optimal = {}
         csv_file = open(self.filepath, 'r')
@@ -55,8 +61,8 @@ class Margin:
         for row in rows:
             self.optimal[row[0]] = int(row[1])
 
-    # this method runs the algorithm for the specified dataset and returns the solution
-    def run_algorithm(self):
+    '''this method runs the algorithm for the specified dataset and returns the solution'''
+    def run_algorithm(self) -> None:
         # initialize empty dictionary
         self.solutions = {}
         reader: DatasetReader
@@ -85,7 +91,7 @@ class Margin:
             # print(f'{sorted(result)}')
             self.solutions[key] = len(result)  # store number of bins in solutions[key]
 
-    # this method returns whether the solutions are optimal_solutions or not
+    '''this method returns whether the solutions are optimal or not'''
     def discrete_margin(self) -> Discrete:
         is_optimal = {}
         if not self.case:
@@ -103,7 +109,7 @@ class Margin:
                         is_optimal[key] = True
         return is_optimal
 
-    # this method returns how many more bins the solutions use than the optimal_solutions solution does
+    '''this method returns how many more bins the solutions use than the optimal solution does'''
     def continuous_margin(self) -> Continuous:
         bin_difference = {}
         if not self.case:
@@ -115,8 +121,8 @@ class Margin:
                     bin_difference[key] = self.solutions[key] - self.optimal[key]
         return bin_difference
 
-    # this method displays the discrete margin
-    def display_discrete(self):
+    '''this method displays the discrete margin'''
+    def display_discrete(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
         # run algorithm to find solutions
@@ -131,8 +137,8 @@ class Margin:
                 discrete += f'\n{key} is not optimal'
         print(discrete)
 
-    # this method displays the continuous margin
-    def display_continuous(self):
+    '''this method displays the continuous margin'''
+    def display_continuous(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
         # run algorithm to find solutions
@@ -143,10 +149,10 @@ class Margin:
         x = []
         y = []
         for key in bin_difference.keys():
-            x.append(key[-1])
+            x.append(key)
             y.append(bin_difference[key])
         plt.bar(x, y, color='maroon', width=0.5)
-        plt.xlabel(f'{self.directory} data Problem')
+        plt.xlabel(f'{self.directory} data')
         plt.ylabel(f'Difference of bins from optimal solution')
         plt.title(f'Optimality of {title} Algorithm in Bin Packing {self.directory} Dataset')
         plt.show()
