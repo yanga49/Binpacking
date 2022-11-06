@@ -7,7 +7,7 @@ class binClasses:
 
     def add_piece(self, x):
         self.pieces.append(x)
-        self.remaining -= x
+        self.remaining -= x.weight
     
     def return_pieces(self):
         return self.pieces

@@ -1,4 +1,3 @@
-
 class Heuristic:
     def __init__(self, weight: int, category : str) -> None:
         self.weight = weight
