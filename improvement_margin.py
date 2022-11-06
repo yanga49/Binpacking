@@ -6,7 +6,7 @@ from macpacking.model import Online, Offline
 # import macpacking.algorithms.online as online
 # import macpacking.algorithms.offline as offline
 from macpacking.algorithms.online import NextFit, MostTerrible, FirstFit, BestFit, WorstFit
-from macpacking.algorithms.offline import NextFit, FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing
+from macpacking.algorithms.offline import NextFitDecreasing, FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing
 
 
 if platform.system() == 'Darwin':
