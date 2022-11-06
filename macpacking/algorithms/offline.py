@@ -5,6 +5,7 @@ from .online import FirstFit as Ff_online
 from .online import WorstFit as Wf_online
 from .online import BestFit as Bf_online
 from .online import RefinedFirstFit as Rff_online
+from .online import MostTerrible as Mt_online
 
 
 class NextFitDecreasing(Offline):
@@ -52,6 +53,15 @@ class RefinedFirstFitDecreasing(Offline):
         delegating to the online version (avoiding code duplication)'''
         weights = sorted(weights, reverse=True)
         delegation = Rff_online()
+        return delegation((capacity, weights))
+
+class MostTerribleDecreasing(Offline):
+
+    def _process(self, capacity: int, weights: WeightSet) -> Result:
+        '''An offline version of MostTerrible, ordering the weigh stream and
+        delegating to the online version (avoiding code duplication)'''
+        weights = sorted(weights, reverse=True)
+        delegation = Mt_online()
         return delegation((capacity, weights))
 
 class GreedyHeuristic(Offline):

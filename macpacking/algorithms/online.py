@@ -72,6 +72,7 @@ class BestFit(Online):
         bin_count = 0
         bin_cap = []
         solution = []
+        # initalizing variables that will be useful when doing KPI comparisons
         operations = 0
         comparisons = 0
         for w in stream:
@@ -110,6 +111,7 @@ class WorstFit(Online):
         bin_count = 0
         bin_cap = []
         solution = []
+        # initalizing variables that will be useful when doing KPI comparisons
         operations = 0
         comparisons = 0
         j = 0
@@ -123,7 +125,6 @@ class WorstFit(Online):
                     mx = bin_cap[j] - w
                     operations += 1
             comparisons += 1
-            # if no bin can accomodate weight, new bin has to be created
             if mx == -1:
                 bin_cap[bin_count] = capacity - w
                 bin_count += 1
@@ -144,7 +145,8 @@ class MostTerrible(Online):
 
     def _process(self, capacity: int, stream: WeightStream) -> Result:
         result = {}
-        solution = [[]]
+        solution = []
+        # initalizing variables that will be useful when doing KPI comparisons
         operations = 0
         comparisons = 0
         for w in stream:
@@ -161,6 +163,7 @@ class RefinedFirstFit(Online):
 
     def __init__(self) -> None:
         super().__init__()
+        # initalizing variables that will be useful when doing KPI comparisons
         self.operations = 0
         self.comparisons = 0
 
