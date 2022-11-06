@@ -4,16 +4,14 @@ from os import listdir
 from os.path import isfile, join, basename, exists
 from macpacking.reader import DatasetReader, BinppReader, JburkardtReader
 from macpacking.model import Online, Offline
-from macpacking.algorithms.baseline import BenMaier
-from macpacking.algorithms.online import FirstFit, BestFit, WorstFit, MostTerrible
+from macpacking.algorithms.online import FirstFit, BestFit, WorstFit, MostTerrible, RefinedFirstFit
 from macpacking.algorithms.online import NextFit as NextFitOnline
-from macpacking.algorithms.offline import FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing
+from macpacking.algorithms.offline import FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing, \
+    MostTerribleDecreasing, GreedyHeuristic, RefinedFirstFitDecreasing
 from macpacking.algorithms.offline import NextFit as NextFitOffline
 import matplotlib
 import matplotlib.pyplot as plt
 import platform
-import argparse
-import binpacking
 from typing import Iterator
 
 
@@ -23,12 +21,16 @@ else:
     matplotlib.use('TkAgg')
 
 
+# Entire binpp dataset is used to benchmark algorithms for KPIs: operations, comparisons.
 ALL_CASES = []
 base = './_datasets/binpp/N'
 for i in range(1, 5):
     for j in range(1, 4):
         for k in [1, 2, 4]:
             ALL_CASES.append(base + str(i) + 'C' + str(j) + 'W' + str(k))
+avg_optimal = 259
+
+# type aliases
 WeightStream = (int, Iterator[int])
 Solution = list[list[int]]
 KPI = str
@@ -37,23 +39,25 @@ Case = str
 
 
 def main():
-    '''Example of benchmark code'''
     all_cases = []
-    kpi = 'operations'
+    kpi = 'comparisons'
     for CASE in ALL_CASES:
         all_cases.append(list_case_files(CASE))
-    online_binpacker = [BestFit(), WorstFit()]
-    offline_binpacker = [NextFitOffline(), FirstFitDecreasing(), BestFitDecreasing(), WorstFitDecreasing()]
-    plot_lines(online_binpacker, all_cases, True, kpi)
+    online_binpacker = [NextFitOnline(), FirstFit(), BestFit(), WorstFit(), MostTerrible(), RefinedFirstFit()]
+    quadratic_big = [NextFitOffline(), WorstFitDecreasing(), RefinedFirstFitDecreasing()]
+    quadratic_small = [FirstFitDecreasing(), BestFitDecreasing()]
+    linear = [MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
+    offline_binpacker = quadratic_big + quadratic_small + linear
+    plot_lines(offline_binpacker, all_cases, False, kpi)
 
 
-def list_case_files(dir: str) -> list[str]:
+def list_case_files(dir: str) -> list[Case]:
     return sorted([f'{dir}/{f}' for f in listdir(dir) if isfile(join(dir, f))])
 
 
 # measures kpi for many cases using a bin packing algorithm
 # returns the average measurement for cases by number of weights
-def run_bench_kpi(algorithm, cases: list[str], is_online, kpi: KPI) -> Result:
+def run_bench_kpi(algorithm, cases: list[Case], is_online: bool, kpi: KPI) -> Result:
     result = {}
     measurement = []
     for case in cases:
@@ -67,7 +71,7 @@ def run_bench_kpi(algorithm, cases: list[str], is_online, kpi: KPI) -> Result:
     return result
 
 
-def plot_lines(algorithms: list, all_cases: list[list[str]], is_online, kpi: KPI) -> None:
+def plot_lines(algorithms: list, all_cases: list[list[Case]], is_online: bool, kpi: KPI) -> None:
     data = {}
     last = 0
     point = {}
@@ -103,20 +107,20 @@ def plot_lines(algorithms: list, all_cases: list[list[str]], is_online, kpi: KPI
             x.append(p[0])
             y.append(p[1])
         plt.plot(x, y, label=algo)
-        print(algo)
-        print(y)
+        # print(algo)
+        # print(y)
     plt.xlabel("Number of weights (n)")
     plt.ylabel("Number of " + kpi)
     online = "offline"
     if is_online:
         online = "online"
-    plt.title("Measurement of " + kpi + " using quadratic " + online + " bin packing algorithms on binpp dataset")
+    plt.title("Measurement of " + kpi + " using linear " + online + " bin packing algorithms on binpp dataset")
     plt.legend()
     plt.show()
 
 
 # runs bin packing algorithm on the given case
-def run_algorithm(algorithm, case: str, is_online):
+def run_algorithm(algorithm, case: str, is_online: bool) -> Result:
     result = {}
     reader: DatasetReader
     reader = BinppReader(case)
@@ -127,8 +131,8 @@ def run_algorithm(algorithm, case: str, is_online):
         strategy: Offline = algorithm
         result['output'] = strategy(reader.offline())
     result['n'] = 0
-    for i in result['output']['solution']:
-        result['n'] += len(i)
+    for soln in result['output']['solution']:
+        result['n'] += len(soln)
     return result
 
 

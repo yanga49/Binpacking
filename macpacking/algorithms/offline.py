@@ -4,6 +4,8 @@ from .online import NextFit as Nf_online
 from .online import FirstFit as Ff_online
 from .online import WorstFit as Wf_online
 from .online import BestFit as Bf_online
+from .online import MostTerrible as Mt_online
+from .online import RefinedFirstFit as Rff_online
 
 
 class NextFit(Offline):
@@ -46,6 +48,26 @@ class WorstFitDecreasing(Offline):
         return delegation((capacity, weights))
 
 
+class MostTerribleDecreasing(Offline):
+
+    def _process(self, capacity: int, weights: WeightSet) -> Result:
+        '''An offline version of MostTerrible, ordering the weigh stream and
+        delegating to the online version (avoiding code duplication)'''
+        weights = sorted(weights, reverse=True)
+        delegation = Mt_online()
+        return delegation((capacity, weights))
+
+
+class RefinedFirstFitDecreasing(Offline):
+
+    def _process(self, capacity: int, weights: WeightSet) -> Result:
+        '''An offline version of RefinedFirstFit, ordering the weigh stream and
+        delegating to the online version (avoiding code duplication)'''
+        weights = sorted(weights, reverse=True)
+        delegation = Rff_online()
+        return delegation((capacity, weights))
+
+
 class GreedyHeuristic(Offline):
 
     def __init__(self, num_bins) -> None:
@@ -66,4 +88,5 @@ class GreedyHeuristic(Offline):
         result['solution'] = partition
         result['operations'] = operations
         result['comparisons'] = comparisons
+        result['name'] = 'greedy'
         return result

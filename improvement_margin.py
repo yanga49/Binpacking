@@ -3,10 +3,6 @@ import matplotlib.pyplot as plt
 import platform
 from macpacking.reader import DatasetReader, BinppReader, JburkardtReader
 from macpacking.model import Online, Offline
-# import macpacking.algorithms.online as online
-# import macpacking.algorithms.offline as offline
-from macpacking.algorithms.online import NextFit, MostTerrible, FirstFit, BestFit, WorstFit
-from macpacking.algorithms.offline import NextFit, FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing
 
 
 if platform.system() == 'Darwin':
@@ -14,7 +10,7 @@ if platform.system() == 'Darwin':
 else:
     matplotlib.use('TkAgg')
 
-# REMEMBER TO TYPE ALIAS OUTPUT
+# type aliases
 Filename = str
 Algorithm = str
 Discrete = dict
@@ -22,7 +18,7 @@ Continuous = dict
 
 
 class Margin:
-    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' '):
+    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' ') -> None:
         self.filepath = optimal_filename
         self.algorithm = algorithm
         self.algo_name = algo_name
@@ -43,7 +39,7 @@ class Margin:
             self.directory = 'jburkardt'
 
     # this method defines the optimal_solutions solutions in a csv file as a dictionary
-    def read_csv(self):
+    def read_csv(self) -> None:
         # initialize empty dictionary
         self.optimal = {}
         csv_file = open(self.filepath, 'r')
@@ -56,7 +52,7 @@ class Margin:
             self.optimal[row[0]] = int(row[1])
 
     # this method runs the algorithm for the specified dataset and returns the solution
-    def run_algorithm(self):
+    def run_algorithm(self) -> None:
         # initialize empty dictionary
         self.solutions = {}
         reader: DatasetReader
@@ -116,7 +112,7 @@ class Margin:
         return bin_difference
 
     # this method displays the discrete margin
-    def display_discrete(self):
+    def display_discrete(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
         # run algorithm to find solutions
@@ -132,7 +128,7 @@ class Margin:
         print(discrete)
 
     # this method displays the continuous margin
-    def display_continuous(self):
+    def display_continuous(self) -> None:
         # read csv file to find optimal solutions
         self.read_csv()
         # run algorithm to find solutions

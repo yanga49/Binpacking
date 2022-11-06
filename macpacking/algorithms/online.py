@@ -1,6 +1,6 @@
 from .. import Result, WeightStream
 from ..model import Online
-from .binClasses import binClasses
+from .BinClass import BinClass
 from .Piece import Heuristic, Piece
 
 
@@ -180,7 +180,7 @@ class RefinedFirstFit(Online):
 
         for w in stream:
 
-            category = self.sortPieces(w, maxP)
+            category = self.sort_pieces(w, maxP)
             w_piece = Piece(w, category)
 
             # if x-piece, add to a class 4 bin
@@ -213,9 +213,10 @@ class RefinedFirstFit(Online):
         result['solution'] = solution
         result['operations'] = self.operations
         result['comparisons'] = self.comparisons
+        result['name'] = 'refined first fit'
         return result
 
-    def get_pieces(self, class_bins, solution):
+    def get_pieces(self, class_bins, solution) -> list[list[Piece]]:
 
         solution = [[]]
 
@@ -227,11 +228,11 @@ class RefinedFirstFit(Online):
 
         return solution[:-1]
 
-    def add_to_bin(self, capacity, classID, class_bins, piece):
+    def add_to_bin(self, capacity, classID, class_bins, piece) -> list[Piece]:
         self.comparisons += 1
         if len(class_bins) == 0:
 
-            createBin = binClasses(capacity, classID)
+            createBin = BinClass(capacity, classID)
             createBin.add_piece(piece)
             class_bins.append(createBin)
 
@@ -253,19 +254,19 @@ class RefinedFirstFit(Online):
                 needBin = True
 
             if needBin:
-                createBin = binClasses(capacity, classID)
+                createBin = BinClass(capacity, classID)
                 createBin.add_piece(piece)
                 class_bins.append(createBin)
 
         return class_bins
 
-    def check_bin(self, class_bin: binClasses):
+    def check_bin(self, class_bin: BinClass):
         for i in class_bin.pieces:
             self.comparisons += 1
             if i.category == "large":
                 return True
 
-    def sortPieces(self, w: int, max: int) -> str:
+    def sort_pieces(self, w: int, max: int) -> str:
 
         x_max = max * 1 / 3
         b2_max = max * 2 / 5
