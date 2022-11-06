@@ -42,7 +42,7 @@ def main():
     kpi = 'operations'
     for CASE in ALL_CASES:
         all_cases.append(list_case_files(CASE))
-    online_binpacker = [NextFitOnline(), FirstFit(), BestFit(), WorstFit(), MostTerrible()]
+    online_binpacker = [BestFit(), WorstFit()]
     offline_binpacker = [NextFitOffline(), FirstFitDecreasing(), BestFitDecreasing(), WorstFitDecreasing()]
     plot_lines(online_binpacker, all_cases, True, kpi)
 
@@ -110,7 +110,7 @@ def plot_lines(algorithms: list, all_cases: list[list[str]], is_online, kpi: KPI
     online = "offline"
     if is_online:
         online = "online"
-    plt.title("Measurement of " + kpi + " using " + online + " bin packing algorithms on binpp dataset")
+    plt.title("Measurement of " + kpi + " using quadratic " + online + " bin packing algorithms on binpp dataset")
     plt.legend()
     plt.show()
 

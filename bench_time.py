@@ -28,12 +28,6 @@ else:
 #   - bin capacity of 120 (C2)
 #   - and weight in the [20,100] interval (W2)
 CASES = './_datasets/binpp/N4C2W2'
-ALL_CASES = []
-base = './_datasets/binpp/N'
-for i in range(1, 5):
-    for j in range(1, 4):
-        for k in [1, 2, 4]:
-            ALL_CASES.append(base + str(i) + 'C' + str(j) + 'W' + str(k))
 WeightStream = (int, Iterator[int])
 Solution = list[list[int]]
 KPI = str
@@ -54,8 +48,10 @@ def main():
     # worst_fit = load_bench_measurements('worst fit', 'outputs/pyperf_measurements.json')
     # most_terrible = load_bench_measurements('most terrible', 'outputs/pyperf_measurements.json')
     vals = []
+    case = [cases[0]]
+    # run_bench_time(online_binpacker, case, True)
     for algo in ['next fit', 'first fit', 'best fit', 'worst fit', 'most terrible']:
-        val = load_bench_measurements(algo, cases, 'outputs/pyperf_measurements.json')
+        val = load_bench_measurements(algo, case, 'outputs/pyperf_measurements_case.json')
         vals.append(val)
     plot_hist(vals)
 
@@ -108,7 +104,7 @@ def run_algorithm(algorithm, case: str, is_online):
     return result
 
 
-def load_bench_measurements(algo: str, cases: str, json_filename: str):
+def load_bench_measurements(algo: str, cases: list[str], json_filename: str):
     """extract the values for a given benchmark"""
     suite = BenchmarkSuite.load(json_filename)
     values = []
@@ -116,13 +112,15 @@ def load_bench_measurements(algo: str, cases: str, json_filename: str):
         name = algo + "_" + basename(case)
         bench = suite.get_benchmark(name)
         values += list(bench.get_values())
+    print(algo)
+    print(values)
     return values, algo
 
 
 def draw_hist(values: list[float], title: str, canvas):
     canvas.set_title(title)
     canvas.set(xlabel='exec time (s)', ylabel='|instances|')
-    canvas.hist(values, 5)
+    canvas.hist(values, 10)
 
 
 def plot_hist(vals: list):

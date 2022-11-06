@@ -22,7 +22,7 @@ Continuous = dict
 
 
 class Margin:
-    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool):
+    def __init__(self, optimal_filename: Filename, algorithm, algo_name: Algorithm, is_online: bool, case=' '):
         self.filepath = optimal_filename
         self.algorithm = algorithm
         self.algo_name = algo_name
@@ -30,8 +30,13 @@ class Margin:
         self.optimal = {}
         self.solutions = {}
         self.directory = ''
+        self.case = False
         if self.filepath == 'optimal_solutions/binpp.csv':
-            self.directory = 'binpp'
+            if case == ' ':
+                self.directory = 'binpp'
+            else:
+                self.directory = case
+                self.case = True
         elif self.filepath == 'optimal_solutions/binpp-hard.csv':
             self.directory = 'binpp-hard'
         elif self.filepath == 'optimal_solutions/jburkardt.csv':
@@ -62,10 +67,14 @@ class Margin:
             elif self.directory == 'binpp-hard':
                 dataset = f'_datasets/{self.directory}/{key}.BPP.txt'
                 reader = BinppReader(dataset)
-            else:  # check if directory == 'jburkardt' if more DatasetReaders added
+            elif self.directory == 'jburkardt':
                 datasetw = f'_datasets/{self.directory}/{key}_w.txt'
                 datasetc = f'_datasets/{self.directory}/{key}_c.txt'
                 reader = JburkardtReader(datasetw, datasetc)
+            elif self.case:
+                if key[0:6] == self.directory:
+                    dataset = f'_datasets/binpp/{self.directory}/{key}.BPP.txt'
+                    reader = BinppReader(dataset)
 
             if self.is_online:
                 strategy: Online = self.algorithm
@@ -73,24 +82,37 @@ class Margin:
             else:
                 strategy: Offline = self.algorithm
                 result = strategy(reader.offline())['solution']
-            print(f'{sorted(result)}')
+            # print(f'{sorted(result)}')
             self.solutions[key] = len(result)  # store number of bins in solutions[key]
 
     # this method returns whether the solutions are optimal_solutions or not
     def discrete_margin(self) -> Discrete:
         is_optimal = {}
-        for key in self.optimal.keys():  # if solution has more bins, it is_optimal = F
-            if self.solutions[key] > self.optimal[key]:
-                is_optimal[key] = False
-            else:
-                is_optimal[key] = True
+        if not self.case:
+            for key in self.optimal.keys():  # if solution has more bins, it is_optimal = F
+                if self.solutions[key] > self.optimal[key]:
+                    is_optimal[key] = False
+                else:
+                    is_optimal[key] = True
+        else:
+            for key in self.optimal.keys():  # if solution has more bins, it is_optimal = F
+                if key[0:6] == self.directory:
+                    if self.solutions[key] > self.optimal[key]:
+                        is_optimal[key] = False
+                    else:
+                        is_optimal[key] = True
         return is_optimal
 
     # this method returns how many more bins the solutions use than the optimal_solutions solution does
     def continuous_margin(self) -> Continuous:
         bin_difference = {}
-        for key in self.optimal.keys():
-            bin_difference[key] = self.solutions[key] - self.optimal[key]
+        if not self.case:
+            for key in self.optimal.keys():
+                bin_difference[key] = self.solutions[key] - self.optimal[key]
+        else:
+            for key in self.optimal.keys():
+                if key[0:6] == self.directory:
+                    bin_difference[key] = self.solutions[key] - self.optimal[key]
         return bin_difference
 
     # this method displays the discrete margin
