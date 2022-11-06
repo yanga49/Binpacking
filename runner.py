@@ -10,10 +10,4 @@ print(test_binpp.solutions)
 print(test_binpp.discrete_margin())
 
 
-test_binpp = Margin('optimal_solutions/jburkardt.csv', WorstFit(), 'Worst Fit', True)
-test_binpp.display_continuous()
-print(test_binpp.optimal)
-print(test_binpp.solutions)
-
-
 

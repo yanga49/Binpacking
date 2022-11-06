@@ -3,7 +3,7 @@ from macpacking.algorithms.online import NextFit, FirstFit, BestFit, WorstFit,Re
 from macpacking.algorithms.offline import NextFitDecreasing, FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing,RefinedFirstFitDecreasing
 from macpacking.__init__ import WeightSet, WeightStream
 
-# testing with a small number of weights
+# testing with a small number of weights first
 capacity = 10
 
 def createWeightSet() -> WeightSet: # creating a weight set allowing for testing of offline algorithms
@@ -18,16 +18,15 @@ def createWeightStream() -> WeightStream: # crating a weight stream allowing for
 test_weightset = createWeightSet()
 test_weightstream = createWeightStream()
 
-
+    
+# testing the online algorithms 
 def test_nextfit_online():
     strategy: Online = NextFit()
     result = strategy((capacity,test_weightstream))
-    answer = [[8, 2], [7, 3], [5, 4, 1]]
+    answer = [[2, 5], [4], [7, 1], [3], [8]]
     assert result['solution'] == answer
 
 
-    
-# testing the online algorithms 
 def test_firstfit_online():
     strategy: Online = FirstFit()
     result = strategy((capacity,test_weightstream))
