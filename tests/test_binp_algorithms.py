@@ -26,4 +26,10 @@ def test_bestfit_offline():
 def test_worstfit_offline():
     pass
 
+def test_refinedfirstfit_online():
+    pass
+
+def test_refinedfirstfit_online(): 
+    pass
+
 
