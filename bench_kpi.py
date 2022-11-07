@@ -1,12 +1,9 @@
-import pyperf
-from pyperf import BenchmarkSuite
 from os import listdir
-from os.path import isfile, join, basename, exists
-from macpacking.reader import DatasetReader, BinppReader, JburkardtReader
+from os.path import isfile, join
+from macpacking.reader import DatasetReader, BinppReader
 from macpacking.model import Online, Offline
-from macpacking.algorithms.online import FirstFit, BestFit, WorstFit, MostTerrible, RefinedFirstFit
-from macpacking.algorithms.online import NextFit as NextFitOnline
-from macpacking.algorithms.offline import FirstFitDecreasing, BestFitDecreasing, WorstFitDecreasing, \
+from macpacking.algorithms.offline import FirstFitDecreasing, \
+    BestFitDecreasing, WorstFitDecreasing, \
     MostTerribleDecreasing, GreedyHeuristic, RefinedFirstFitDecreasing
 from macpacking.algorithms.offline import NextFit as NextFitOffline
 import matplotlib
@@ -21,13 +18,15 @@ else:
     matplotlib.use('TkAgg')
 
 
-# Entire binpp dataset is used to benchmark algorithms for KPIs: operations, comparisons.
+# Entire binpp dataset is used to benchmark
+# algorithms for KPIs: operations, comparisons.
 ALL_CASES = []
 base = './_datasets/binpp/N'
 for i in range(1, 5):
     for j in range(1, 4):
         for k in [1, 2, 4]:
-            ALL_CASES.append(base + str(i) + 'C' + str(j) + 'W' + str(k))
+            ALL_CASES.append(base + str(i) +
+                             'C' + str(j) + 'W' + str(k))
 avg_optimal = 259
 
 # type aliases
@@ -46,14 +45,10 @@ def main():
         all_cases.append(list_case_files(CASE))
 
     # separate algorithms based on desired graphs
-    online_binpacker = [NextFitOnline(), FirstFit(), BestFit(), WorstFit(), MostTerrible(), RefinedFirstFit()]
-    quadratic_big = [NextFitOffline(), WorstFitDecreasing(), RefinedFirstFitDecreasing()]
+    quadratic_big = [NextFitOffline(), WorstFitDecreasing(),
+                     RefinedFirstFitDecreasing()]
     quadratic_small = [FirstFitDecreasing(), BestFitDecreasing()]
-    quadratic_c = quadratic_big + quadratic_small
     linear_c = [MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
-    quadratic_o = [BestFitDecreasing(), WorstFitDecreasing()]
-    linear_o = [FirstFitDecreasing(), NextFitOffline(), RefinedFirstFitDecreasing(),
-                MostTerribleDecreasing(), GreedyHeuristic(avg_optimal)]
     offline_binpacker = quadratic_big + quadratic_small + linear_c
 
     plot_lines(offline_binpacker, all_cases, False, kpi, "all offline")
@@ -66,8 +61,10 @@ def list_case_files(dir: str) -> list[Case]:
 
 # measures kpi for many cases using a bin packing algorithm
 # returns the average measurement for cases by number of weights
-def run_bench_kpi(algorithm, cases: list[Case], is_online: bool, kpi: KPI) -> Result:
-    '''this function finds the average kpi measurement for an algorithm on many cases'''
+def run_bench_kpi(algorithm, cases: list[Case],
+                  is_online: bool, kpi: KPI) -> Result:
+    '''this function finds the average kpi measurement
+    for an algorithm on many cases'''
     result = {}
     measurement = []
     # run algorithm on each case
@@ -82,8 +79,10 @@ def run_bench_kpi(algorithm, cases: list[Case], is_online: bool, kpi: KPI) -> Re
     return result
 
 
-def plot_lines(algorithms: list, all_cases: list[list[Case]], is_online: bool, kpi: KPI, classify: str) -> None:
-    '''this function plots a line graph of the kpi measurements for all algorithms on all cases'''
+def plot_lines(algorithms: list, all_cases: list[list[Case]],
+               is_online: bool, kpi: KPI, classify: str) -> None:
+    '''this function plots a line graph of the kpi measurements
+     for all algorithms on all cases'''
     data = {}
     last = 0
     point = {}
@@ -95,7 +94,8 @@ def plot_lines(algorithms: list, all_cases: list[list[Case]], is_online: bool, k
             result = run_bench_kpi(algo, cases, is_online, kpi)
             name = result['name']
             n = result['n']
-            # separate points by n, each point stores the average value for each n
+            # separate points by n,
+            # each point stores the average value for each n
             if first:
                 point = (n, result['avg'])
                 first = False
@@ -126,14 +126,16 @@ def plot_lines(algorithms: list, all_cases: list[list[Case]], is_online: bool, k
         # print(y)
     plt.xlabel("Number of weights (n)")
     plt.ylabel(f"Number of {kpi}")
-    plt.title(f"Measurement of {kpi} using {classify} bin packing algorithms on binpp dataset")
+    plt.title(f"Measurement of {kpi} using {classify} \
+        bin packing algorithms on binpp dataset")
     plt.legend()
     plt.show()
 
 
 # runs bin packing algorithm on the given case
 def run_algorithm(algorithm, case: str, is_online: bool) -> Result:
-    '''this function runs the algorithm on a case and returns the result and number of items'''
+    '''this function runs the algorithm on a case and returns
+    the result and number of items'''
     result = {}
     reader: DatasetReader
     reader = BinppReader(case)

@@ -1,7 +1,7 @@
-from .. import Result,Solution, WeightStream
+from .. import Result, WeightStream
 from ..model import Online
 from .BinClass import BinClass
-from .Piece import Heuristic, Piece
+from .Piece import Piece
 
 
 class NextFit(Online):
@@ -159,6 +159,7 @@ class MostTerrible(Online):
         result['name'] = 'most terrible'
         return result
 
+
 class RefinedFirstFit(Online):
 
     def __init__(self) -> None:
@@ -172,13 +173,13 @@ class RefinedFirstFit(Online):
         result = {}
         solution = [[]]
         b2Count = 0
-        #list of all the bins of each class
+        # list of all the bins of each class
         c1_bins = []
         c2_bins = []
         c3_bins = []
         c4_bins = []
 
-        maxP = capacity #used for normalization
+        maxP = capacity  # used for normalization
 
         for w in stream:
 
@@ -190,29 +191,33 @@ class RefinedFirstFit(Online):
                 self.comparisons += 1
                 c4_bins = self.add_to_bin(capacity, "C4", c4_bins, w_piece)
 
-            #if b2-piece, add to either class 1 or class 3 bin
+            # if b2-piece, add to either class 1 or class 3 bin
             elif w_piece.category == "medium2":
                 self.comparisons += 2
                 b2Count += 1
                 self.operations += 1
                 self.comparisons += 4
-                if (b2Count % 6 == 0) or (b2Count % 7 == 0) or (b2Count % 8 == 0) or (b2Count % 9 == 0):
+                if (b2Count % 6 == 0) or (b2Count % 7 == 0) or \
+                   (b2Count % 8 == 0) or (b2Count % 9 == 0):
                     c1_bins = self.add_to_bin(capacity, "C1", c1_bins, w_piece)
                 else:
                     c3_bins = self.add_to_bin(capacity, "C3", c3_bins, w_piece)
-            #if b1-piece, add to a class 2 bin
+            # if b1-piece, add to a class 2 bin
             elif w_piece.category == "medium1":
                 self.comparisons += 3
                 c2_bins = self.add_to_bin(capacity, "C2", c2_bins, w_piece)
 
-            #if a-piece, add to a class 1 bin
+            # if a-piece, add to a class 1 bin
             elif w_piece.category == "large":
                 self.comparisons += 4
                 c1_bins = self.add_to_bin(capacity, "C1", c1_bins, w_piece)
 
             else:
                 self.comparisons += 4
-        solution = self.get_pieces(c1_bins, solution) + self.get_pieces(c2_bins, solution) + self.get_pieces(c3_bins, solution) + self.get_pieces(c4_bins, solution)
+        solution = self.get_pieces(c1_bins, solution) + \
+            self.get_pieces(c2_bins, solution) + \
+            self.get_pieces(c3_bins, solution) + \
+            self.get_pieces(c4_bins, solution)
         self.operations += 1
         # important KPI evaluation metrics initalized
         result['solution'] = solution
@@ -221,7 +226,7 @@ class RefinedFirstFit(Online):
         result['name'] = 'refined first fit'
         return result
 
-    #function responsible for extracting weights and bins from the class arrays
+    # function for extracting weights and bins from the class arrays
     def get_pieces(self, class_bins, solution) -> list[list[Piece]]:
 
         solution = [[]]
@@ -234,7 +239,8 @@ class RefinedFirstFit(Online):
 
         return solution[:-1]
 
-    # function responsible for adding the piece to a bin, depending on it's class
+    # function responsible for adding
+    # the piece to a bin, depending on it's class
     def add_to_bin(self, capacity, classID, class_bins, piece) -> list[Piece]:
         self.comparisons += 1
         # if there are no bins made in this class yet
@@ -256,13 +262,13 @@ class RefinedFirstFit(Online):
                         if self.check_bin(class_bins[i]):
                             class_bins[i].add_piece(piece)
                             break
-                    
+
                     # this is for every other category, besides B2
                     class_bins[i].add_piece(piece)
                     break
                 needBin = True
 
-            #make new bin for piece
+            # make new bin for piece
             if needBin:
                 createBin = BinClass(capacity, classID)
                 createBin.add_piece(piece)
@@ -270,17 +276,18 @@ class RefinedFirstFit(Online):
 
         return class_bins
 
-    #function to check if the bin has an A-piece, as it is a requirement for a B2-piece to be added to the bin
+    # function to check if the bin has an A-piece,
+    # as it is a requirement for a B2-piece to be added to the bin
     def check_bin(self, class_bin: BinClass):
         for i in class_bin.pieces:
             self.comparisons += 1
             if i.category == "large":
                 return True
 
-    #sorts weight into its piece category
+    # sorts weight into its piece category
     def sort_pieces(self, w: int, max: int) -> str:
 
-        #normalize the interval
+        # normalize the interval
         x_max = max * 1 / 3
         b2_max = max * 2 / 5
         b1_max = max * 1 / 2
@@ -308,4 +315,3 @@ class RefinedFirstFit(Online):
 
         else:
             self.comparisons += 4
-

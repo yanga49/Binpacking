@@ -46,6 +46,7 @@ class BinppReader(DatasetReader):
                 weights.append(int(reader.readline()))
             return (capacity, weights)
 
+
 class JburkardtReader(DatasetReader):
     '''Read problem description according to the jburkardt format'''
 
@@ -67,5 +68,5 @@ class JburkardtReader(DatasetReader):
             for line in lines:
                 if line != "\n":
                     weights.append(int(line.strip()))
-            
+
         return (capacity, weights)

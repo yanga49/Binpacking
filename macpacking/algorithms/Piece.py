@@ -8,10 +8,9 @@ class Heuristic:
 
 
 class Piece(Heuristic):
+
     def __init__(self, weight: int, category: str) -> None:
         super().__init__(weight, category)
 
     def h(self, category: int) -> str:
         return category
-
-
